@@ -17,14 +17,14 @@ async function main(){
   await call('Page.navigate',{url:base});await ready('document.readyState === "complete" && !!document.querySelector(".news-row")');
   await evaluate(`(async()=>{const image=new Image();image.src='assets/portal-hero-optimized.jpg';await image.decode();return image.naturalWidth>0;})()`);
   const home=await evaluate(`(() => {
-    const counts={pets:window.WLO_CATALOG.pets.length,bags:window.WLO_CATALOG.bags.length};
+    const counts=window.WLO_SITE_COUNTS;
     document.querySelector('[data-slide-to="1"]').click();const slide=!document.querySelector('[data-slide="1"]').hidden;
     document.querySelector('[data-news="更新"]').click();const news=document.querySelectorAll('.news-row').length>0;
     document.querySelector('.news-row').click();const dialog=document.querySelector('#news-dialog').open;document.querySelector('#news-dialog .dialog-close').click();
     document.querySelector('[data-news="全部"]').click();document.querySelector('[data-slide-to="0"]').click();
     return {...counts,slide,news,dialog,eventCards:document.querySelectorAll('.event-promo').length,forbidden:/下载|注册/.test(document.body.innerText)};
   })()`);
-  if(home.pets<20||home.bags<100||!home.slide||!home.news||!home.dialog||home.eventCards!==3||home.forbidden)throw Error('Homepage check failed: '+JSON.stringify(home));
+  if(home.pets<700||home.bags<1000||!home.slide||!home.news||!home.dialog||home.eventCards!==3||home.forbidden)throw Error('Homepage check failed: '+JSON.stringify(home));
   await screenshot('wlo-portal2-home-desktop.png');
   await call('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:1,mobile:true});await sleep(400);
   const mobile=await evaluate(`(() => {document.querySelector('.menu-toggle').click();const expanded=document.querySelector('.menu-toggle').getAttribute('aria-expanded');document.querySelector('.main-nav a[href="#news"]').click();window.scrollTo(0,0);return {width:innerWidth,docWidth:document.documentElement.scrollWidth,expanded,closed:document.querySelector('.menu-toggle').getAttribute('aria-expanded')};})()`);
@@ -33,7 +33,7 @@ async function main(){
   await call('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
   await call('Page.navigate',{url:new URL('gameinfo.html#bags',base).href});await ready('document.readyState === "complete" && !!document.querySelector(".bag-card")');
   const initial=await evaluate(`({title:document.querySelector('#catalog-title').innerText,count:document.querySelector('#catalog-count').innerText,cards:document.querySelectorAll('.bag-card').length})`);
-  if(initial.title!=='福袋资料'||initial.cards!==24)throw Error('Direct bag link failed: '+JSON.stringify(initial));
+  if(initial.title!=='福袋资料'||initial.cards!==48)throw Error('Direct bag link failed: '+JSON.stringify(initial));
   await screenshot('wlo-portal2-info-desktop.png');
   const info=await evaluate(`(() => {
     const search=document.querySelector('#catalog-search');search.value='甜心情侣';search.dispatchEvent(new Event('input',{bubbles:true}));
@@ -70,7 +70,19 @@ async function main(){
     location.hash='#zeus';await new Promise(r=>setTimeout(r,50));const zeus=document.querySelectorAll('.reward-card').length===5 && document.querySelector('#reward-groups').innerText.includes('隐藏关');
     location.hash='#pirate';await new Promise(r=>setTimeout(r,50));const pirate=document.querySelectorAll('.reward-card').length===2 && document.querySelector('#reward-groups').innerText.includes('任选一项');
     location.hash='#treasure';await new Promise(r=>setTimeout(r,50));const treasure=document.querySelectorAll('.reward-card').length===1 && document.querySelector('#reward-groups').innerText.includes('第六关宝箱');
-    location.hash='#zodiac';return {zodiac,challenge,zeus,pirate,treasure};
+    location.hash='#cooperation';await new Promise(r=>setTimeout(r,50));const cooperation=document.querySelectorAll('.reward-card').length===3 && document.querySelector('#reward-groups').innerText.includes('挑战郑和');
+    location.hash='#shenting';await new Promise(r=>setTimeout(r,50));const shenting=document.querySelectorAll('.reward-card').length===12 && document.querySelector('#reward-groups').innerText.includes('神庭印记');
+    location.hash='#world';await new Promise(r=>setTimeout(r,50));const world=document.querySelectorAll('.reward-card').length===3 && document.querySelector('#reward-groups').innerText.includes('金箱');
+    location.hash='#dungeon';await new Promise(r=>setTimeout(r,50));const dungeon=document.querySelectorAll('.reward-card').length===40 && document.querySelector('#reward-groups').innerText.includes('猛虎洞穴');
+    location.hash='#campaign';await new Promise(r=>setTimeout(r,50));const campaign=document.querySelectorAll('.reward-card').length===58 && document.querySelector('#reward-groups').innerText.includes('2026-11-10 00:00');
+    const search=document.querySelector('#reward-search');search.value='迷你萝卡福袋';search.dispatchEvent(new Event('input',{bubbles:true}));const eventSearch=document.querySelectorAll('.reward-card').length>0 && document.querySelectorAll('.reward-card').length<58;
+    location.hash='#draw';await new Promise(r=>setTimeout(r,50));const draw=document.querySelectorAll('.reward-card').length===1 && document.querySelectorAll('.reward-item').length>10;
+    location.hash='#newbie';await new Promise(r=>setTimeout(r,50));const newbie=document.querySelectorAll('.reward-card').length===1 && document.querySelectorAll('.reward-item').length>1;
+    location.hash='#exchange';await new Promise(r=>setTimeout(r,50));const exchange=document.querySelectorAll('.reward-card').length===4 && document.querySelectorAll('.reward-cost').length>0;
+    location.hash='#arcade';await new Promise(r=>setTimeout(r,50));const arcade=document.querySelectorAll('.reward-card').length===16 && document.querySelector('#reward-groups').innerText.includes('翻翻乐');
+    location.hash='#limited';await new Promise(r=>setTimeout(r,50));const limited=document.querySelectorAll('.reward-card').length===1 && document.querySelector('#reward-groups').innerText.includes('2026-11-11 23:59:59') && document.querySelectorAll('.reward-cost').length>10;
+    location.hash='#wind';await new Promise(r=>setTimeout(r,50));const wind=document.querySelector('#activity-facts').innerText.includes('暂未开放') && document.querySelector('#reward-result-count').innerText.includes('暂无');
+    location.hash='#zodiac';return {zodiac,challenge,zeus,pirate,treasure,cooperation,shenting,world,dungeon,campaign,eventSearch,draw,newbie,exchange,arcade,limited,wind};
   })()`);
   if(Object.values(events).some(value=>!value))throw Error('Activity check failed: '+JSON.stringify(events));
   await sleep(200);await screenshot('wlo-portal3-activities-desktop.png');
@@ -78,7 +90,19 @@ async function main(){
   const eventMobile=await evaluate('({width:innerWidth,docWidth:document.documentElement.scrollWidth,cards:document.querySelectorAll(".reward-card").length})');
   if(eventMobile.docWidth>eventMobile.width||eventMobile.cards!==10)throw Error('Mobile activity check failed: '+JSON.stringify(eventMobile));
   await screenshot('wlo-portal3-activities-mobile.png');
-  console.log(JSON.stringify({home,mobile,initial,info,partnerImages,mobileInfo,deepLink,events,eventMobile}));
+  await call('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
+  await call('Page.navigate',{url:new URL('gameinfo.html#item-55677',base).href});await ready('document.readyState === "complete" && !!document.querySelector(".bag-card[open]")');
+  const bagDeepLink=await evaluate(`document.querySelector('.bag-card[open]').innerText.includes('一等宠物糖浆袋') && document.querySelectorAll('.bag-card[open] .bag-items li').length===11`);
+  await call('Page.navigate',{url:new URL('gameinfo.html#item-35344',base).href});await ready('document.readyState === "complete" && !!document.querySelector(".bag-card[open]")');
+  const branch=await evaluate(`document.querySelector('.bag-card[open]').innerText.includes('自选白金枪盾') && document.querySelector('.bag-card[open]').innerText.includes('自选法翠枪盾')`);
+  await call('Page.navigate',{url:new URL('gameinfo.html#item-34296',base).href});await ready('document.readyState === "complete" && !!document.querySelector(".bag-card[open]")');
+  const oneYuan=await evaluate(`document.querySelector('.bag-card[open]').innerText.includes('随机获得其中一项') && document.querySelectorAll('.bag-card[open] .bag-items li').length===18`);
+  if(!bagDeepLink||!branch||!oneYuan)throw Error('Container deep link or branch check failed');
+  await call('Page.navigate',{url:new URL('gameinfo.html#pet-17484',base).href});await ready('document.readyState === "complete" && document.querySelector("#pet-dialog").open');
+  const baseModel=await evaluate(`(async()=>{const img=document.querySelector('.form-art img');await img.decode();return img.naturalWidth>0 && img.src.includes('pet-models/') && document.querySelector('.model-note').innerText.includes('颜色');})()`);
+  if(!baseModel)throw Error('Base model check failed');
+  await screenshot('wlo-portal4-base-model.png');
+  console.log(JSON.stringify({home,mobile,initial,info,partnerImages,mobileInfo,deepLink,events,eventMobile,bagDeepLink,branch,oneYuan,baseModel}));
   await call('Browser.close').catch(()=>{});ws.close();
 }
 main().catch(e=>{console.error(e);process.exitCode=1;}).finally(async()=>{if(!browser.killed)browser.kill();await sleep(400);if(profile.startsWith(temp+path.sep)&&path.basename(profile).startsWith('wlo-portal-qa-')){try{fs.rmSync(profile,{recursive:true,force:true});}catch{}}});

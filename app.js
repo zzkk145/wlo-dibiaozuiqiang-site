@@ -6,10 +6,10 @@
     nav.querySelectorAll('a').forEach(link => link.addEventListener('click', () => { menu.setAttribute('aria-expanded', 'false'); nav.classList.remove('open'); }));
   }
   document.querySelectorAll('[data-back-top]').forEach(link => link.addEventListener('click', event => { event.preventDefault(); window.scrollTo({top:0,behavior:'smooth'}); }));
-  if (window.WLO_CATALOG) {
+  if (window.WLO_CATALOG || window.WLO_SITE_COUNTS) {
     const petCount=document.querySelector('[data-pet-count]'),bagCount=document.querySelector('[data-bag-count]');
-    if(petCount)petCount.textContent=window.WLO_CATALOG.pets.length;
-    if(bagCount)bagCount.textContent=window.WLO_CATALOG.bags.length;
+    if(petCount)petCount.textContent=window.WLO_SITE_COUNTS ? window.WLO_SITE_COUNTS.pets : window.WLO_CATALOG.pets.length;
+    if(bagCount)bagCount.textContent=window.WLO_SITE_COUNTS ? window.WLO_SITE_COUNTS.bags : window.WLO_CATALOG.bags.length;
   }
 
   const list=document.getElementById('news-list');

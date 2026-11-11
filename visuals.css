@@ -11,6 +11,11 @@
 .event-extra-links { display:flex; gap:12px; margin-top:12px; }
 .event-extra-links a { display:flex; flex:1; justify-content:space-between; gap:10px; padding:13px 16px; background:#fff; border:1px solid #d8edf2; color:#275f79; font-weight:700; }
 .event-extra-links a span { color:#439bb0; font-size:12px; font-weight:400; }
+.model-spotlights { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:10px; margin-top:18px; }
+.model-spotlights a { display:flex; flex-direction:column; align-items:center; justify-content:flex-end; min-height:155px; padding:10px; border:1px solid #dcebf1; background:linear-gradient(#e5f6fc,#fff); color:#326b80; }
+.model-spotlights a:hover { border-color:#66bfce; }
+.model-spotlights img { height:110px; max-width:100%; object-fit:contain; image-rendering:pixelated; }
+.model-spotlights b { margin-top:5px; font-size:13px; }
 
 .pet-art { display:flex; align-items:center; justify-content:center; background-color:#eff8f8; }
 .pet-art.element-1 { background-color:#f1f5e7; }
@@ -23,10 +28,21 @@
 .pet-art.pet-wind { background-color:#68b596; }
 .pet-art.reborn { background-position:100% center; }
 .pet-art.pet-wind.reborn { background-position:25% center; }
-.form-art { float:right; width:92px; height:112px; margin:0 0 10px 12px; }
-.form-art img { max-height:100px; }
+.form-art { float:right; width:120px; height:145px; margin:0 0 10px 12px; }
+.form-art img { width:auto; height:130px; max-height:130px; max-width:95%; }
 .form-detail::after { content:''; display:block; clear:both; }
+.skill-chips { display:block; }
+.skill-detail { padding:6px 0; border-top:1px solid #e4eff1; color:#528492; font-size:12px; }
+.skill-detail strong { color:#326c80; }
+.skill-detail p { margin:2px 0; color:#7396a2; line-height:1.5; }
+.skill-detail small,.model-note { color:#91a8b0; font-size:11px; }
+.model-note { clear:both; margin:8px 0 0; }
+.pet-acquisition { grid-column:1/-1; padding:10px 14px; background:#edf8fa; color:#548090; font-size:12px; }
+.pet-acquisition p { margin:3px 0; }
+.pet-dialog-body.single-form { grid-template-columns:1fr; }
 .bag-heading { display:flex; align-items:center; gap:10px; margin:9px 0 5px; }
+.bag-status { display:flex; align-items:center; gap:6px; }
+.bag-unverified { color:#bd8b5c; font-size:10px; }
 .bag-heading > .item-icon { width:48px; height:48px; flex:none; padding:7px; background:#e9f8fb; border:1px solid #d7eef2; image-rendering:pixelated; }
 .bag-heading-text { display:block; min-width:0; flex:1; }
 .bag-name { margin:0 0 3px; }
@@ -34,6 +50,7 @@
 .bag-item-label { display:flex; align-items:center; gap:8px; min-width:0; }
 .bag-item-label .item-icon { width:27px; height:27px; object-fit:contain; image-rendering:pixelated; }
 .bag-items li { align-items:center; }
+.bag-description { margin:0 0 10px; color:#648796; font-size:12px; line-height:1.6; }
 
 .activity-page-hero { min-height:260px; display:flex; align-items:center; background:linear-gradient(90deg,#123f5de6,#14547485 55%,#14547415),url('assets/activities.jpg') center 48%/cover; color:#fff; }
 .activity-page-hero > div { width:min(1188px,100%); margin:auto; padding:25px 18px 46px; }
@@ -42,7 +59,7 @@
 .activity-page-hero p { margin:0; color:#e3f8fc; }
 .activity-layout { max-width:1220px; margin:-28px auto 70px; padding:0 16px; position:relative; }
 .activity-panel { padding:25px 30px 30px; background:#fff; border:1px solid #dcebf1; box-shadow:0 9px 25px #4384a018; }
-.activity-tabs { display:flex; gap:5px; overflow-x:auto; padding-bottom:17px; }
+.activity-tabs { display:flex; flex-wrap:wrap; gap:5px; padding-bottom:17px; }
 .activity-tabs a { flex:none; padding:10px 17px; border:1px solid #dcebef; color:#668896; font-size:13px; font-weight:700; }
 .activity-tabs a:hover,.activity-tabs a.selected { background:#1699b5; border-color:#1699b5; color:#fff; }
 .activity-detail-hero { min-height:205px; display:flex; align-items:flex-end; padding:25px 29px; color:#fff; background-image:linear-gradient(90deg,#102f48e8 0%,#12445ab8 45%,#12445a15 100%),url('assets/activities.jpg'); background-repeat:no-repeat; background-size:cover,cover; }
@@ -58,20 +75,26 @@
 .reward-heading h3 { margin:0 0 3px; color:#245d79; font-size:21px; }
 .reward-heading p { margin:0; color:#7898a5; font-size:12px; }
 .reward-heading > span { color:#9ab0ba; white-space:nowrap; font-size:11px; }
+.reward-search { max-width:500px; margin-bottom:6px; }
+.reward-result-count { margin:8px 0 12px; color:#8da6b0; font-size:12px; }
 .reward-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; align-items:start; }
 .reward-card { border:1px solid #dcebf0; background:#fbfefe; }
 .reward-card-heading { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:12px 14px; background:#eff9fa; }
 .reward-card-heading h4 { margin:0; color:#2b667c; font-size:15px; }
 .reward-mode { color:#b57938; font-size:11px; white-space:nowrap; }
+.reward-note { margin:0; padding:9px 14px 4px; color:#72929c; font-size:11px; line-height:1.6; }
 .reward-items { list-style:none; margin:0; padding:5px 12px 9px; }
 .reward-item { display:flex; align-items:center; gap:8px; min-height:38px; padding:4px 0; color:#4c7182; border-bottom:1px solid #edf4f5; font-size:13px; }
 .reward-item:last-child { border-bottom:0; }
 .reward-item-image { width:30px; height:30px; object-fit:contain; image-rendering:pixelated; }
 .reward-item-name { flex:1; min-width:0; }
+.reward-item-text { flex:1; min-width:0; }
+.reward-cost { display:block; color:#92a9b2; font-size:11px; }
 .reward-quantity { color:#c88b42; white-space:nowrap; font-size:12px; }
 .activity-footnote { margin:23px 0 0; padding-top:15px; border-top:1px solid #e4eef1; color:#86a2ad; font-size:12px; line-height:1.8; }
 @media(max-width:800px) {
   .event-promo-grid,.reward-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .model-spotlights { grid-template-columns:repeat(3,minmax(0,1fr)); }
   .event-promo:last-child { grid-column:1/-1; }
   .activity-facts { grid-template-columns:1fr; gap:6px; }
 }
@@ -89,6 +112,8 @@
   .activity-layout { padding:0 10px; }
   .activity-panel { padding:18px 14px 24px; }
   .activity-tabs a { padding:9px 12px; }
+  .form-art { width:105px; height:130px; }
+  .form-art img { height:118px; max-height:118px; }
   .activity-detail-hero { min-height:175px; padding:20px; }
   .activity-detail-hero h2 { font-size:24px; }
   .reward-grid { grid-template-columns:1fr; }

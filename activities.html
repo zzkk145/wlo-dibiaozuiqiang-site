@@ -4,14 +4,15 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#156e9b">
-  <meta name="description" content="查看地表最强的十二宫、勇闯30关、宙斯、海盗来袭与夺宝大作战奖励。">
+  <meta name="description" content="查看地表最强的活动、副本、福利档位与奖励资料。">
   <title>活动与奖励 · 地表最强</title>
-  <link rel="stylesheet" href="style.css?v=3">
-  <link rel="stylesheet" href="visuals.css?v=3">
-  <script src="item-images.js?v=3" defer></script>
-  <script src="activity-data.js?v=3" defer></script>
-  <script src="app.js?v=3" defer></script>
-  <script src="activities.js?v=3" defer></script>
+  <link rel="stylesheet" href="style.css?v=4">
+  <link rel="stylesheet" href="visuals.css?v=4">
+  <script src="item-images.js?v=4" defer></script>
+  <script src="container-index.js?v=4" defer></script>
+  <script src="activity-data.js?v=4" defer></script>
+  <script src="app.js?v=4" defer></script>
+  <script src="activities.js?v=4" defer></script>
 </head>
 <body class="info-page activity-page">
 <div class="utility-bar"><div class="utility-inner"><span>欢迎来到 <b>地表最强</b> 玩家站</span><a href="index.html#community">玩家交流群：<b>图神</b> <span aria-hidden="true">↗</span></a></div></div>
@@ -37,6 +38,22 @@
         <a href="#zeus" data-event="zeus">宙斯挑战</a>
         <a href="#pirate" data-event="pirate">海盗来袭</a>
         <a href="#treasure" data-event="treasure">夺宝大作战</a>
+        <a href="#cooperation" data-event="cooperation">协力战</a>
+        <a href="#shenting" data-event="shenting">神庭回响</a>
+        <a href="#world" data-event="world">世界PK</a>
+        <a href="#dungeon" data-event="dungeon">副本奖励</a>
+        <a href="#campaign" data-event="campaign">福利活动</a>
+        <a href="#limited" data-event="limited">限时掉落</a>
+        <a href="#draw" data-event="draw">线上抽奖</a>
+        <a href="#newbie" data-event="newbie">新手福利</a>
+        <a href="#exchange" data-event="exchange">活动兑换</a>
+        <a href="#arcade" data-event="arcade">游戏屋</a>
+        <a href="#temple" data-event="temple">神殿</a>
+        <a href="#quiz" data-event="quiz">机智问答</a>
+        <a href="#wind" data-event="wind">全民大风吹</a>
+        <a href="#team" data-event="team">团P竞赛</a>
+        <a href="#arena" data-event="arena">无界擂台</a>
+        <a href="#siege" data-event="siege">组织攻城</a>
       </nav>
       <div class="activity-detail-hero" id="activity-visual">
         <div><span id="activity-kicker"></span><h2 id="activity-title"></h2><p id="activity-description"></p></div>
@@ -44,6 +61,8 @@
       <p class="activity-schedule-note">时段为 2026 年 11 月 11 日配置快照，使用北京时间。实际入场条件和开放状态请查看游戏内活动面板。</p>
       <div class="activity-facts" id="activity-facts"></div>
       <div class="reward-heading"><div><h3>关卡与奖励</h3><p id="reward-intro"></p></div><span>配置快照 · 2026.11.11</span></div>
+      <label class="search-box reward-search"><span aria-hidden="true">⌕</span><span class="sr-only">搜索活动、关卡或奖励</span><input id="reward-search" type="search" placeholder="搜索关卡、活动名称或奖励物品" autocomplete="off"></label>
+      <p class="reward-result-count" id="reward-result-count" role="status"></p>
       <div class="reward-grid" id="reward-groups" aria-live="polite"></div>
       <p class="activity-footnote">资料根据 2026 年 11 月 11 日的本服配置快照整理，后台调整后可能变化。活动开放时间、参与条件和实际奖励请以游戏内显示为准。</p>
     </section>
