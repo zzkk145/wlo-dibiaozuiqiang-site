@@ -1,0 +1,56 @@
+const {spawn}=require('node:child_process'),fs=require('node:fs'),os=require('node:os'),path=require('node:path');
+const base=process.argv[2]||'http://127.0.0.1:4174/';
+const temp=path.resolve(os.tmpdir()),profile=fs.mkdtempSync(path.join(temp,'wlo-portal-qa-'));
+const port=20000+Math.floor(Math.random()*10000);
+const browser=spawn('C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',['--headless=new','--disable-gpu','--no-first-run','--disable-extensions',`--remote-debugging-port=${port}`,`--user-data-dir=${profile}`,'about:blank'],{stdio:'ignore'});
+const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+async function main(){
+  let pages;for(let i=0;i<100;i++){try{pages=await(await fetch(`http://127.0.0.1:${port}/json/list`)).json();break;}catch{await sleep(100);}}
+  if(!pages)throw Error('Browser did not start');
+  const ws=new WebSocket(pages.find(p=>p.type==='page').webSocketDebuggerUrl);await new Promise((resolve,reject)=>{ws.onopen=resolve;ws.onerror=reject;});
+  let id=0;const pending=new Map();ws.onmessage=e=>{const m=JSON.parse(e.data);if(pending.has(m.id)){const p=pending.get(m.id);pending.delete(m.id);m.error?p.reject(Error(m.error.message)):p.resolve(m.result);}};
+  const call=(method,params={})=>new Promise((resolve,reject)=>{const current=++id;pending.set(current,{resolve,reject});ws.send(JSON.stringify({id:current,method,params}));});
+  const evaluate=async expression=>{const r=await call('Runtime.evaluate',{expression,returnByValue:true,awaitPromise:true});if(r.exceptionDetails)throw Error(r.exceptionDetails.text);return r.result.value;};
+  const ready=async expression=>{for(let i=0;i<150;i++){try{if(await evaluate(expression))return;}catch{}await sleep(100);}throw Error('Page did not finish loading');};
+  const screenshot=async name=>{const r=await call('Page.captureScreenshot',{format:'png'});fs.writeFileSync(path.join(temp,name),Buffer.from(r.data,'base64'));};
+  await call('Page.enable');await call('Runtime.enable');await call('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
+  await call('Page.navigate',{url:base});await ready('document.readyState === "complete" && !!document.querySelector(".news-row")');
+  const home=await evaluate(`(() => {
+    const counts={pets:window.WLO_CATALOG.pets.length,bags:window.WLO_CATALOG.bags.length};
+    document.querySelector('[data-slide-to="1"]').click();const slide=!document.querySelector('[data-slide="1"]').hidden;
+    document.querySelector('[data-news="更新"]').click();const news=document.querySelectorAll('.news-row').length===2;
+    document.querySelector('.news-row').click();const dialog=document.querySelector('#news-dialog').open;document.querySelector('#news-dialog .dialog-close').click();
+    document.querySelector('[data-news="全部"]').click();document.querySelector('[data-slide-to="0"]').click();
+    return {...counts,slide,news,dialog,forbidden:/下载|注册/.test(document.body.innerText)};
+  })()`);
+  if(home.pets<20||home.bags<100||!home.slide||!home.news||!home.dialog||home.forbidden)throw Error('Homepage check failed: '+JSON.stringify(home));
+  await screenshot('wlo-portal2-home-desktop.png');
+  await call('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:1,mobile:true});await sleep(400);
+  const mobile=await evaluate(`(() => {document.querySelector('.menu-toggle').click();const expanded=document.querySelector('.menu-toggle').getAttribute('aria-expanded');document.querySelector('.main-nav a[href="#news"]').click();window.scrollTo(0,0);return {width:innerWidth,docWidth:document.documentElement.scrollWidth,expanded,closed:document.querySelector('.menu-toggle').getAttribute('aria-expanded')};})()`);
+  if(mobile.width!==390||mobile.docWidth>390||mobile.expanded!=='true'||mobile.closed!=='false')throw Error('Mobile homepage check failed: '+JSON.stringify(mobile));
+  await screenshot('wlo-portal2-home-mobile.png');
+  await call('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
+  await call('Page.navigate',{url:new URL('gameinfo.html#bags',base).href});await ready('document.readyState === "complete" && !!document.querySelector(".bag-card")');
+  const initial=await evaluate(`({title:document.querySelector('#catalog-title').innerText,count:document.querySelector('#catalog-count').innerText,cards:document.querySelectorAll('.bag-card').length})`);
+  if(initial.title!=='福袋资料'||initial.cards!==24)throw Error('Direct bag link failed: '+JSON.stringify(initial));
+  await screenshot('wlo-portal2-info-desktop.png');
+  const info=await evaluate(`(() => {
+    const search=document.querySelector('#catalog-search');search.value='甜心情侣';search.dispatchEvent(new Event('input',{bubbles:true}));
+    const one=document.querySelectorAll('.bag-card').length===1;const detail=document.querySelector('.bag-card');detail.open=true;const bagItems=detail.querySelectorAll('.bag-items li').length;
+    document.querySelector('[data-tab="packs"]').click();const packs=document.querySelectorAll('.bag-card').length>0;
+    document.querySelector('[data-tab="pets"]').click();search.value='玄风';search.dispatchEvent(new Event('input',{bubbles:true}));const pet=document.querySelectorAll('.pet-card').length===1;
+    document.querySelector('.pet-card').click();const petDialog=document.querySelector('#pet-dialog').open && document.querySelector('#pet-dialog-body').innerText.includes('风刃阵');document.querySelector('#pet-dialog .dialog-close').click();
+    document.querySelector('[data-tab="guide"]').click();const guides=document.querySelectorAll('.guide-card').length===6;
+    return {one,bagItems,packs,pet,petDialog,guides};
+  })()`);
+  if(!info.one||info.bagItems!==15||!info.packs||!info.pet||!info.petDialog||!info.guides)throw Error('Catalog interaction check failed: '+JSON.stringify(info));
+  await call('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:1,mobile:true});await sleep(400);
+  const mobileInfo=await evaluate(`(() => {document.querySelector('[data-tab="bags"]').click();document.querySelector('.bag-card').open=true;return {width:innerWidth,docWidth:document.documentElement.scrollWidth,items:document.querySelectorAll('.bag-card[open] .bag-items li').length};})()`);
+  if(mobileInfo.docWidth>mobileInfo.width||mobileInfo.items<1)throw Error('Mobile catalog check failed: '+JSON.stringify(mobileInfo));
+  await evaluate('location.hash="#pet-34580"');await sleep(200);
+  const deepLink=await evaluate(`document.querySelector('#pet-dialog').open && document.querySelector('#pet-dialog-title').innerText==='吕布' && document.querySelector('#pet-dialog-body').innerText.includes('机神破军')`);
+  if(!deepLink)throw Error('Partner deep link failed');
+  console.log(JSON.stringify({home,mobile,initial,info,mobileInfo,deepLink}));
+  await call('Browser.close').catch(()=>{});ws.close();
+}
+main().catch(e=>{console.error(e);process.exitCode=1;}).finally(async()=>{if(!browser.killed)browser.kill();await sleep(400);if(profile.startsWith(temp+path.sep)&&path.basename(profile).startsWith('wlo-portal-qa-')){try{fs.rmSync(profile,{recursive:true,force:true});}catch{}}});
