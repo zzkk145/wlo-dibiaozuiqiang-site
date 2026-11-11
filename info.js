@@ -10,6 +10,18 @@
   const more=document.getElementById('load-more'),dialog=document.getElementById('pet-dialog');
   let current='pets',limit=24,lastFocused=null;
   const node=(tag,cls,text)=>{const el=document.createElement(tag);if(cls)el.className=cls;if(text!==undefined)el.textContent=text;return el;};
+  function petArt(id,featured,reborn=false){
+    const art=node('span','pet-art');
+    const source=(window.WLO_PET_IMAGES||{})[id];
+    if(source){const img=node('img');img.src=source;img.alt='';img.loading='lazy';art.append(img);}
+    else if(featured){art.classList.add(id===34580||id===34581?'pet-lubu':'pet-wind');if(reborn)art.classList.add('reborn');}
+    return art;
+  }
+  function itemArt(id){
+    const source=(window.WLO_ITEM_IMAGES||{})[id];
+    if(!source)return null;
+    const img=node('img','item-icon');img.src=source;img.alt='';img.loading='lazy';return img;
+  }
   function selectTab(name,updateHash=true){
     if(!titles[name])name='pets';current=name;limit=24;search.value='';filter.value='all';
     document.getElementById('catalog-title').textContent=titles[name];document.getElementById('catalog-intro').textContent=intros[name];
@@ -20,34 +32,35 @@
     render();
   }
   function openPet(pet,changeHash=true){
-    lastFocused=document.activeElement;document.getElementById('pet-dialog-kicker').textContent=pet.featured?'本服特色伙伴':'伙伴图鉴';
+    lastFocused=document.activeElement;document.getElementById('pet-dialog-kicker').textContent=pet.featured?'新伙伴 · 测试中':'伙伴图鉴';
     document.getElementById('pet-dialog-title').textContent=pet.name;document.getElementById('pet-dialog-element').textContent=(elements[pet.element]||'其他')+'属性';
     const body=document.getElementById('pet-dialog-body');body.replaceChildren();
     pet.forms.forEach((form,index)=>{
       const section=node('section','form-detail');const title=node('h3','',index===0?'普通形态':'转生形态');
       const name=node('p','form-name',form.name);const label=node('p','form-label','技能');const skills=node('div','skill-chips');
       if(form.skills.length)form.skills.forEach(skill=>skills.append(node('span','skill-chip',skill)));else skills.append(node('span','skill-chip','请以游戏内显示为准'));
-      section.append(title,name,label,skills);body.append(section);
+      const art=petArt(form.id,pet.featured,index>0);art.classList.add('form-art');
+      section.append(art,title,name,label,skills);body.append(section);
     });
     if(changeHash)history.replaceState(null,'','#pet-'+pet.id);
     dialog.showModal();
   }
   function petCard(pet){
     const button=node('button','pet-card');button.type='button';
-    const art=node('span','pet-art '+(pet.id===34580?'pet-lubu':pet.id===34582?'pet-wind':'pet-default element-'+pet.element));
-    if(!pet.featured)art.append(node('span','pet-initial',pet.name.slice(0,1)));
+    const art=petArt(pet.id,pet.featured);art.classList.add('element-'+pet.element);
     const text=node('span','pet-card-text'),top=node('span','pet-card-top');top.append(node('strong','',pet.name),node('span','element-badge element-'+pet.element,(elements[pet.element]||'其他')+'属性'));
     const forms=pet.forms.map(f=>f.name).filter((n,i,a)=>a.indexOf(n)===i).join(' / ');
-    text.append(top,node('span','pet-forms',forms===pet.name?'普通 / 转生形态':forms),node('span','pet-link','查看伙伴详情 →'));
+    text.append(top,node('span','pet-forms',pet.featured?'测试中 · '+(forms===pet.name?'普通 / 转生形态':forms):(forms===pet.name?'普通 / 转生形态':forms)),node('span','pet-link','查看伙伴详情 →'));
     button.append(art,text);button.addEventListener('click',()=>openPet(pet));return button;
   }
   function bagCard(bag){
     const details=node('details','bag-card');const summary=node('summary','bag-summary');
     const top=node('span','bag-top');top.append(node('span','bag-badge '+(bag.kind==='lucky'?'bag-random':'bag-fixed'),bag.kind==='lucky'?'福袋':'礼包'),node('span','bag-id','#'+bag.id));
     const name=node('strong','bag-name',bag.name);const preview=node('span','bag-preview',bag.items.slice(0,3).map(item=>item.name).join(' · ')+(bag.items.length>3?' 等':''));
-    const bottom=node('span','bag-expand','查看 '+bag.items.length+' 项内容');bottom.append(node('i','','＋'));summary.append(top,name,preview,bottom);
-    const body=node('div','bag-body');body.append(node('p','bag-body-title','物品内容'));
-    const ul=node('ul','bag-items');bag.items.forEach(item=>{const li=node('li');li.append(node('span','',item.name),node('b','','×'+item.count));ul.append(li);});body.append(ul);details.append(summary,body);return details;
+    const heading=node('span','bag-heading');const image=itemArt(bag.id);if(image)heading.append(image);const text=node('span','bag-heading-text');text.append(name,preview);heading.append(text);
+    const bottom=node('span','bag-expand','查看 '+bag.items.length+' 项内容');bottom.append(node('i','','＋'));summary.append(top,heading,bottom);
+    const body=node('div','bag-body');body.append(node('p','bag-body-title',bag.kind==='lucky'?'随机获得其中一项':'礼包内含全部物品'));
+    const ul=node('ul','bag-items');bag.items.forEach(item=>{const li=node('li'),label=node('span','bag-item-label');const icon=itemArt(item.id);if(icon)label.append(icon);label.append(node('span','',item.name));li.append(label,node('b','','×'+item.count));ul.append(li);});body.append(ul);details.append(summary,body);return details;
   }
   function guideCards(){
     const guides=[

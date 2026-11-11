@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#156e9b">
+  <meta name="description" content="查看地表最强的十二宫、勇闯30关、宙斯、海盗来袭与夺宝大作战奖励。">
+  <title>活动与奖励 · 地表最强</title>
+  <link rel="stylesheet" href="style.css?v=3">
+  <link rel="stylesheet" href="visuals.css?v=3">
+  <script src="item-images.js?v=3" defer></script>
+  <script src="activity-data.js?v=3" defer></script>
+  <script src="app.js?v=3" defer></script>
+  <script src="activities.js?v=3" defer></script>
+</head>
+<body class="info-page activity-page">
+<div class="utility-bar"><div class="utility-inner"><span>欢迎来到 <b>地表最强</b> 玩家站</span><a href="index.html#community">玩家交流群：<b>图神</b> <span aria-hidden="true">↗</span></a></div></div>
+<header class="site-header"><div class="nav-inner">
+  <a class="logo" href="index.html" aria-label="飘流幻境地表最强首页"><img src="assets/wlo-logo.png" alt="飘流幻境 罗德岛之役"></a>
+  <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="main-nav"><span></span><span></span><span></span><span class="sr-only">打开导航</span></button>
+  <nav id="main-nav" class="main-nav" aria-label="主导航">
+    <a href="index.html"><b>官网首页</b><small>HOME</small></a>
+    <a href="index.html#news"><b>新闻中心</b><small>NEWS</small></a>
+    <a href="gameinfo.html"><b>游戏资料</b><small>GAME INFO</small></a>
+    <a href="index.html#features"><b>特色玩法</b><small>FEATURES</small></a>
+    <a class="current" href="activities.html"><b>活动奖励</b><small>EVENTS</small></a>
+    <a href="index.html#community"><b>玩家交流</b><small>COMMUNITY</small></a>
+  </nav>
+</div></header>
+<main>
+  <section class="activity-page-hero"><div><span>ADVENTURE &amp; REWARDS</span><h1>活动与奖励</h1><p>选一个活动，看看每一关能获得什么。</p></div></section>
+  <div class="activity-layout">
+    <section class="activity-panel" aria-labelledby="activity-title">
+      <nav class="activity-tabs" aria-label="选择活动">
+        <a href="#zodiac" data-event="zodiac">十二宫</a>
+        <a href="#challenge" data-event="challenge">勇闯30关</a>
+        <a href="#zeus" data-event="zeus">宙斯挑战</a>
+        <a href="#pirate" data-event="pirate">海盗来袭</a>
+        <a href="#treasure" data-event="treasure">夺宝大作战</a>
+      </nav>
+      <div class="activity-detail-hero" id="activity-visual">
+        <div><span id="activity-kicker"></span><h2 id="activity-title"></h2><p id="activity-description"></p></div>
+      </div>
+      <p class="activity-schedule-note">时段为 2026 年 11 月 11 日配置快照，使用北京时间。实际入场条件和开放状态请查看游戏内活动面板。</p>
+      <div class="activity-facts" id="activity-facts"></div>
+      <div class="reward-heading"><div><h3>关卡与奖励</h3><p id="reward-intro"></p></div><span>配置快照 · 2026.11.11</span></div>
+      <div class="reward-grid" id="reward-groups" aria-live="polite"></div>
+      <p class="activity-footnote">资料根据 2026 年 11 月 11 日的本服配置快照整理，后台调整后可能变化。活动开放时间、参与条件和实际奖励请以游戏内显示为准。</p>
+    </section>
+  </div>
+</main>
+<footer class="site-footer"><div><img src="assets/wlo-logo.png" alt=""><p><b>地表最强 · 飘流幻境玩家站</b><br>资料由本服已有内容整理，具体以游戏内实际情况为准。<br><small>本站为玩家交流网站，与所参考的国服官网分别运营。</small></p><a href="index.html">返回首页 ↑</a></div></footer>
+</body>
+</html>
