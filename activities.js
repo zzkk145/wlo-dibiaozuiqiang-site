@@ -1,5 +1,5 @@
 (() => {
-  const data = window.WLO_ACTIVITIES;
+  let data = window.WLO_ACTIVITIES;
   if (!data) return;
   const descriptions = {
     zodiac: {
@@ -127,19 +127,27 @@
       description: '组织成员集结，参与攻城争夺。',
       facts: ['入口：游戏内组织与攻城界面', '面板配置时段：周日 12:00–24:00', '参赛资格与规则以游戏内显示为准', '当前快照没有可核对的专用奖励清单'],
       rewards: '奖励名称和数量尚未核对。'
+    },
+    more: {
+      name: '更多游戏内容', kicker: 'MORE CONTENT', style: 'pirate',
+      description: '查看已配置的其他玩法和掉落内容。',
+      facts: ['按游戏内容编号列出已接入的项目', '玩法名称、触发条件和开放状态以游戏内为准'],
+      rewards: '项目内的物品按当前配置显示。'
     }
   };
   const tabs = [...document.querySelectorAll('[data-event]')];
   const groups = document.getElementById('reward-groups');
   const search = document.getElementById('reward-search');
-  let currentKey = 'zodiac';
+  const more = document.getElementById('reward-more');
+  let currentKey = 'zodiac', groupLimit = 48;
+  let liveRaw = null;
   const element = (tag, className, text) => {
     const node = document.createElement(tag);
     if (className) node.className = className;
     if (text !== undefined) node.textContent = text;
     return node;
   };
-  function show(name) {
+  function show(name, resetSearch = true) {
     const current = descriptions[name] || descriptions.zodiac;
     const key = descriptions[name] ? name : 'zodiac';
     tabs.forEach(tab => {
@@ -152,23 +160,40 @@
     document.getElementById('activity-kicker').textContent = current.kicker;
     document.getElementById('activity-description').textContent = current.description;
     document.getElementById('activity-visual').className = `activity-detail-hero visual-${current.style}`;
-    document.getElementById('reward-intro').textContent = current.rewards;
-    document.getElementById('activity-facts').replaceChildren(...current.facts.map(fact => element('p', '', fact)));
+    document.getElementById('reward-intro').textContent = data.live ? '展示已接入的当前生效奖励。未配置或尚未核对的项目以游戏内为准。' : current.rewards;
+    const facts=data.live?current.facts.filter(fact=>!/(快照|时段|11 月 11 日|报名费|入口关闭)/.test(fact)):current.facts;
+    if(data.live&&key==='shenting'){
+      const values=liveRaw?.operations||{},get=(name,fallback)=>Object.prototype.hasOwnProperty.call(values,name)?values[name]:fallback;
+      const index=facts.findIndex(fact=>fact.includes('级起'));if(index>=0)facts.splice(index,1);
+      facts.push(`报名费：每人 ${Number(get('shenting.fee',500000)).toLocaleString('zh-CN')} 金币`);
+      facts.push(`最低等级：未转生 ${get('shenting.level.base',180)} 级；转职／转生 ${get('shenting.level.reborn',100)} 级`);
+    }
+    const code=key==='team'?'team-pvp':key;
+    if(data.live&&liveRaw?.panel_schedules&&Object.prototype.hasOwnProperty.call(liveRaw.panel_schedules,code)){
+      const windows=liveRaw.panel_schedules[code],names=['','周一','周二','周三','周四','周五','周六','周日'];
+      const time=minutes=>`${String(Math.floor(minutes/60)).padStart(2,'0')}:${String(minutes%60).padStart(2,'0')}`;
+      facts.push(windows.length?'面板时段（北京时间）：'+windows.map(w=>`${names[w.day]} ${time(w.start)}–${time(w.end)}`).join('；'):'活动面板本周未配置开放时段');
+    }
+    if(data.live)facts.push('实际入场条件以游戏内为准');
+    document.getElementById('activity-facts').replaceChildren(...facts.map(fact => element('p', '', fact)));
     currentKey = key;
-    search.value = '';
+    if(resetSearch){search.value = '';groupLimit=48;}
     renderGroups();
   }
   function renderGroups() {
     const query = search.value.trim().toLocaleLowerCase();
-    const rows = data.events[currentKey].filter(group => [group.title,group.note,...group.items.flatMap(item=>[item.name,item.costName])].join(' ').toLocaleLowerCase().includes(query));
-    document.getElementById('reward-result-count').textContent = rows.length ? `显示 ${rows.length} 组奖励资料` : query ? '没有找到相关奖励' : '当前快照暂无已核对的奖励清单';
+    const rows = (data.events[currentKey]||[]).filter(group => [group.title,group.note,...group.items.flatMap(item=>[item.name,item.costName])].join(' ').toLocaleLowerCase().includes(query));
+    document.getElementById('reward-result-count').textContent = rows.length ? `显示 ${rows.length} 组奖励资料` : query ? '没有找到相关奖励' : '暂无已核对的奖励清单';
     groups.replaceChildren();
-    for (const group of rows) {
+    more.hidden=rows.length<=groupLimit;
+    more.textContent=`查看更多（剩余 ${Math.max(0,rows.length-groupLimit)} 组）`;
+    for (const group of rows.slice(0,groupLimit)) {
       const card = element('article', 'reward-card');
       const heading = element('div', 'reward-card-heading');
       heading.append(element('h4', '', group.title));
-      const mode = group.mode === 'random' ? '随机获得一项' : group.mode === 'choice' ? '任选一项' : group.mode === 'pool' ? '奖池内容' : group.mode === 'drop' ? '额外掉落' : group.mode === 'exchange' || group.title.startsWith('印记兑换') ? '兑换项目' : currentKey === 'campaign' ? '档位奖励' : currentKey === 'newbie' ? '领取奖励' : '通关奖励';
+      const mode = group.mode === 'unknown' ? '配置内容' : group.mode === 'random' ? '随机获得一项' : group.mode === 'choice' ? '任选一项' : group.mode === 'pool' ? '奖池内容' : group.mode === 'drop' ? '额外掉落' : group.mode === 'exchange' || group.title.startsWith('印记兑换') ? '兑换项目' : currentKey === 'campaign' ? '档位奖励' : currentKey === 'newbie' ? '领取奖励' : '通关奖励';
       heading.append(element('span', 'reward-mode', mode));
+      if(group.snapshot)heading.append(element('span','reward-mode','历史资料'));
       const list = element('ul', 'reward-items');
       for (const item of group.items) {
         const line = element('li', 'reward-item');
@@ -194,7 +219,17 @@
     }
   }
   function fromHash() { show(location.hash.slice(1)); }
-  search.addEventListener('input', renderGroups);
+  search.addEventListener('input',()=>{groupLimit=48;renderGroups();});
+  more.addEventListener('click',()=>{groupLimit+=48;renderGroups();});
+  window.addEventListener('wlo-live-game',event=>{
+    if(!event.detail.activities)return;
+    data=event.detail.activities;liveRaw=event.detail.raw;window.WLO_ACTIVITIES=data;
+    const heading=document.querySelector('.reward-heading > span');if(heading)heading.textContent='当前生效配置';
+    const note=document.querySelector('.activity-schedule-note');if(note)note.textContent='已接入的面板时段使用北京时间；实际入场条件和玩法开放状态以游戏内为准。';
+    const foot=document.querySelector('.activity-footnote');if(foot)foot.textContent='已接入的奖励按当前生效配置显示；继承项目和未核对的玩法以游戏内为准。';
+    show(currentKey,false);
+  });
+  window.addEventListener('wlo-live-icons',renderGroups);
   window.addEventListener('hashchange', fromHash);
   fromHash();
 })();

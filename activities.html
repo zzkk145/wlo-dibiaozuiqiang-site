@@ -11,8 +11,9 @@
   <script src="item-images.js?v=4" defer></script>
   <script src="container-index.js?v=4" defer></script>
   <script src="activity-data.js?v=4" defer></script>
-  <script src="app.js?v=4" defer></script>
-  <script src="activities.js?v=4" defer></script>
+  <script src="live-game.js?v=1" defer></script>
+  <script src="app.js?v=5" defer></script>
+  <script src="activities.js?v=5" defer></script>
 </head>
 <body class="info-page activity-page">
 <div class="utility-bar"><div class="utility-inner"><span>欢迎来到 <b>地表最强</b> 玩家站</span><a href="index.html#community">玩家交流群：<b>图神</b> <span aria-hidden="true">↗</span></a></div></div>
@@ -54,6 +55,7 @@
         <a href="#team" data-event="team">团P竞赛</a>
         <a href="#arena" data-event="arena">无界擂台</a>
         <a href="#siege" data-event="siege">组织攻城</a>
+        <a href="#more" data-event="more">更多游戏内容</a>
       </nav>
       <div class="activity-detail-hero" id="activity-visual">
         <div><span id="activity-kicker"></span><h2 id="activity-title"></h2><p id="activity-description"></p></div>
@@ -64,6 +66,7 @@
       <label class="search-box reward-search"><span aria-hidden="true">⌕</span><span class="sr-only">搜索活动、关卡或奖励</span><input id="reward-search" type="search" placeholder="搜索关卡、活动名称或奖励物品" autocomplete="off"></label>
       <p class="reward-result-count" id="reward-result-count" role="status"></p>
       <div class="reward-grid" id="reward-groups" aria-live="polite"></div>
+      <div class="more-wrap"><button class="load-more" id="reward-more" type="button" hidden>查看更多</button></div>
       <p class="activity-footnote">资料根据 2026 年 11 月 11 日的本服配置快照整理，后台调整后可能变化。活动开放时间、参与条件和实际奖励请以游戏内显示为准。</p>
     </section>
   </div>

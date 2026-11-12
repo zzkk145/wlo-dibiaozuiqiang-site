@@ -43,6 +43,11 @@
     });
     dialog.querySelectorAll('.dialog-close,.dialog-done').forEach(button=>button.addEventListener('click',()=>dialog.close()));
     dialog.addEventListener('click',event=>{if(event.target===dialog)dialog.close();});dialog.addEventListener('close',()=>{if(lastFocused)lastFocused.focus();});
+    window.addEventListener('wlo-live-game',event=>{
+      if(!event.detail.news)return;window.SITE_CONTENT=event.detail.news;
+      const selected=tabs.find(tab=>tab.classList.contains('selected'));render(selected?.dataset.news||'全部');
+      const note=document.querySelector('.data-note');if(note)note.textContent='活动和奖励的已接入配置可在活动页面查看，实际参与条件以游戏内显示为准。';
+    });
     render('全部');
   }
 

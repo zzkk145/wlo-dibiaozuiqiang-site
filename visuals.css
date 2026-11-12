@@ -119,3 +119,6 @@
   .reward-grid { grid-template-columns:1fr; }
   .reward-heading { align-items:flex-start; flex-direction:column; }
 }
+/* Current public-data connectivity is visible on all three pages. */
+.live-sync-status{margin:0;padding:8px 18px;text-align:center;font-size:13px;color:#166344;background:#e5f8ef}
+.live-sync-status.live-sync-offline{color:#865819;background:#fff5df}
