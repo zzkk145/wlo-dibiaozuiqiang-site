@@ -182,6 +182,10 @@
   const main=scope.document.querySelector('main');if(main)main.prepend(status);
   const updateStatus=(connected,checked) => {lastConnected=connected;lastChecked=checked;status.classList.toggle('live-sync-offline',!connected);status.textContent=connected?`已连接游戏数据 · ${new Date(checked).toLocaleTimeString('zh-CN',{timeZone:'Asia/Shanghai',hour12:false})}${iconState==='pending'?' · 正在同步图标':iconState==='failed'?' · 图标暂不可用':''}`:'实时资料暂不可用，当前展示上次资料';};
   const schedule=delay=>{clearTimeout(timer);if(!scope.document.hidden)timer=setTimeout(poll,delay);};
+  const scheduleRetry=()=>{
+    failures++;
+    schedule(Math.min(30000,5000*2**Math.min(failures-1,3)));
+  };
   function applyIcons(raw){
     if(!iconGraphics||!raw)return;const images={...scope.WLO_ITEM_IMAGES};
     const paths=new Map(Object.entries(iconGraphics).map(([picture,png])=>[Number(picture),'data:image/png;base64,'+png]));
@@ -229,8 +233,13 @@
       if(!result.ok || !/^[a-f0-9]{64}$/.test(result.version) || typeof result.connected!=='boolean')throw Error('资料返回无效');
       if(!result.unchanged){lastContent=result.content;const value=project(lastContent,original);version=result.version;scope.WLO_ITEM_IMAGES=value.itemImages;if(needsModels&&modelFeedVersion!==lastContent.model_feed_version){scope.WLO_MODEL_GRAPHICS={};scope.WLO_MODEL_VERSION=lastContent.model_version;}scope.WLO_CONTAINER_IDS=value.containerIds;scope.dispatchEvent(new CustomEvent('wlo-live-game',{detail:value}));if(iconVersion===lastContent.icon_version)applyIcons(lastContent);}
       else if(!lastContent || result.version!==version)throw Error('缺少资料版本');
-      failures=0;updateStatus(result.connected,result.checked_at);if(result.connected){pollIcons();pollModels();}schedule(result.connected?5000:30000);
-    } catch (_) {failures++;updateStatus(false,'');schedule(Math.min(60000,10000*Math.pow(2,Math.min(failures,3))));}
+      updateStatus(result.connected,result.checked_at);
+      if(!result.connected){scheduleRetry();return;}
+      failures=0;
+      pollIcons();
+      pollModels();
+      schedule(5000);
+    } catch (_) {updateStatus(false,'');scheduleRetry();}
     finally{inflight=false;}
   }
   scope.document.addEventListener('visibilitychange',()=>{if(scope.document.hidden)clearTimeout(timer);else schedule(0);});
