@@ -81,7 +81,10 @@
     const sameRound = current?.id === view.current?.id;
     const selected = sameRound ? form.querySelector('input[name="item"]:checked')?.value : null;
     current = view.current;
-    if (!sameRound) codeInput.value = '';
+    if (!sameRound) {
+      codeInput.value = '';
+      say('');
+    }
     form.hidden = !current || current.id === voted;
     get('ballot-state').textContent = current
       ? '北京时间 ' + time(current.starts_at) + ' 至 ' + time(current.ends_at) +

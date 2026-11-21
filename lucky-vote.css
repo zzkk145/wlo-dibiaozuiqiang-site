@@ -10,6 +10,7 @@
   padding: clamp(16px, 3vw, 32px);
   background: #fff;
   color: #133b54;
+  font-size: max(16px, 1rem);
   box-shadow: 0 8px 24px #14648e10;
 }
 .ballot-heading, .ballot-input {
