@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#156e9b">
+  <meta name="description" content="通关龙王祭坛，投票选出下期福袋。">
+  <title>下期福袋投票 · 地表最强</title>
+  <link rel="stylesheet" href="style.css?v=4">
+  <link rel="stylesheet" href="visuals.css?v=4">
+  <link rel="stylesheet" href="lucky-vote.css?v=1">
+  <script src="item-images.js?v=4" defer></script>
+  <script src="app.js?v=5" defer></script>
+  <script src="lucky-vote.js?v=1" defer></script>
+</head>
+<body class="info-page activity-page">
+<div class="utility-bar"><div class="utility-inner"><span>欢迎来到 <b>地表最强</b> 玩家站</span><a href="index.html#community">玩家交流群：<b>图神</b></a></div></div>
+<header class="site-header"><div class="nav-inner">
+  <a class="logo" href="index.html" aria-label="飘流幻境地表最强首页"><img src="assets/wlo-logo.png" alt="飘流幻境 罗德岛之役"></a>
+  <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="main-nav"><span></span><span></span><span></span><span class="sr-only">打开导航</span></button>
+  <nav id="main-nav" class="main-nav" aria-label="主导航">
+    <a href="index.html"><b>官网首页</b><small>HOME</small></a>
+    <a href="gameinfo.html#bags"><b>福袋资料</b><small>GAME INFO</small></a>
+    <a href="activities.html"><b>活动奖励</b><small>EVENTS</small></a>
+    <a class="current" href="lucky-vote.html" aria-current="page"><b>福袋投票</b><small>VOTE</small></a>
+  </nav>
+</div></header>
+<main>
+  <section class="activity-page-hero"><div><span>龙王祭坛</span><h1>下期福袋投票</h1><p>本期首次通关龙王祭坛，每个游戏账号获得一票。</p></div></section>
+  <div class="ballot-layout">
+    <section class="ballot-panel" aria-labelledby="current-title">
+      <div class="ballot-heading"><h2 id="current-title">本期候选</h2><button id="ballot-refresh" type="button">刷新</button></div>
+      <p id="ballot-state" role="status">正在读取本期投票…</p>
+      <form id="ballot-form" hidden>
+        <fieldset><legend class="sr-only">选择一款福袋</legend><div class="ballot-choices" id="ballot-choices"></div></fieldset>
+        <div class="ballot-submit">
+          <label for="ballot-code">游戏内投票码</label>
+          <p id="ballot-code-help">通关后在游戏聊天框输入 <kbd>@福袋投票</kbd>，就能看到你的投票码。</p>
+          <div class="ballot-input">
+            <input id="ballot-code" type="text" maxlength="48" required autocomplete="off" spellcheck="false" autocapitalize="off" aria-describedby="ballot-code-help">
+            <button type="submit" id="ballot-submit">确认投票</button>
+          </div>
+          <p class="ballot-rule">提交后不能改票。同票按本页候选顺序排列。</p>
+        </div>
+      </form>
+      <p id="ballot-message" role="status" hidden></p>
+      <section id="ballot-upcoming" aria-labelledby="upcoming-title" hidden><h3 id="upcoming-title">下轮投票</h3><p id="ballot-upcoming-text"></p></section>
+    </section>
+    <section class="ballot-panel" id="ballot-results" aria-labelledby="result-title" hidden>
+      <h2 id="result-title">上期票选结果</h2>
+      <p id="ballot-result-period"></p>
+      <ul id="ballot-winners" class="ballot-winners"></ul>
+      <p id="ballot-result-summary"></p>
+    </section>
+  </div>
+</main>
+<footer class="site-footer"><div><img src="assets/wlo-logo.png" alt=""><p><b>地表最强 · 飘流幻境玩家站</b></p><a href="activities.html">查看活动奖励</a></div></footer>
+</body>
+</html>
